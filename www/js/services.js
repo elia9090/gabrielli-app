@@ -87,7 +87,7 @@ function getMaximoTktList(stringFilter){
         crossDomain: true,
             error: function (data, status, xhr) {
                 //alert(JSON.stringify(data));
-                myApp.alert('Errore caricamento ticket');
+                // myApp.alert('Nessun dato da caricare');
                 err = 'err_00'
             },
             success: function (data, status, xhr) {
@@ -147,7 +147,7 @@ function getUserInfo(){
         if(window.sessionStorage.jsessionid === ''){
             myApp.hidePreloader();
             getLogout();
-            
+
         }else{
              $$.ajax({
                 headers: {
@@ -172,7 +172,7 @@ function getUserInfo(){
                     },
                     success: function (data, status, xhr) {
                         window.sessionStorage.setItem("userEmail", data.email);
-                         
+
                     },
 
                 statusCode: {
@@ -182,7 +182,7 @@ function getUserInfo(){
                     }
                 }
             });
-            
+
         }
 }
 function validateUser(uuid='',upwd=''){
@@ -233,38 +233,9 @@ function validateUser(uuid='',upwd=''){
     return chkLogin;
 }
 
-function uploadFoto() {
-    var img = {};
-    img = {
-        "titolo": "pippo",
-        "des": "pluto"
-    };
-    $$.ajax({
-        headers: {
-            'Authorization': 'Bearer 102-token',
-            'Access-Control-Allow-Origin': '*',
-        },
-        url: 'http://192.168.3.9/filemanage/postfile',
-        method: 'POST',
-        crossDomain: true,
-        data: img,
-        success: function (data, status, xhr) {
-            alert("success");
-        },
-        statusCode: {
-            401: function (xhr) {
-                alert('failure!');
-            }
-        },
-        error: function (data, status, xhr) {
-            alert('failure!!');
-        }
-    });
-}
-
 // funzione reperimento documenti
 function getDocumentList(docAmountFrom,docAmountTo,dateFrom,dateTo,docContains){
-    
+
         if(window.sessionStorage.jsessionid === ''){
             myApp.hidePreloader();
             getLogout();
@@ -325,95 +296,223 @@ function getDocumentList(docAmountFrom,docAmountTo,dateFrom,dateTo,docContains){
 }
 function sendDocument(keyDoc_RF, linkUrlDocumento_SP, title){
      if(window.sessionStorage.jsessionid === ''){
-            myApp.hidePreloader();
-            getLogout();
-        }else{
-                $$.ajax({
-                      headers: {
-                          'Authorization': 'Bearer 102-token',
-                          'Access-Control-Allow-Origin': '*',
-                          'Content-type': 'application/x-www-form-urlencoded',
-                          'jSessionID': window.sessionStorage.jsessionid,
-                          'EMail' : window.sessionStorage.userEmail,
-                          'LinkUrlDocumento_SP': linkUrlDocumento_SP,
-                          'KeyDoc_RF': keyDoc_RF,
-                          'Subject': title
-                      },
-                      async: false, //needed if you want to populate variable directly without an additional callback
-                      url :URL_ENDPOINT+'/AFBNetWS/resourcesDocs/manageDocs/sendDocument',
-                      method: 'GET',
-                      dataType: 'json', //compulsory to receive values as an object
-                      processData: true, //ignore parameters if sets to false
-                      //contentType: 'application/x-www-form-urlencoded',
-                      crossDomain: true,
-                          error: function (data, status, xhr) {
-                              myApp.hidePreloader();
-                              //alert(JSON.stringify(data));
-                              myApp.alert("Errore nell'invio della mail");
-                              err = 'err_00'
-                          },
-                          success: function (data, status, xhr) {
-                                  myApp.hidePreloader();
-                                  myApp.alert('Documento inviato con successo alla email: '+window.sessionStorage.userEmail);
-                          },
+         myApp.hidePreloader();
+        getLogout();
+    }
+    else{
+    $$.ajax({
+          headers: {
+              'Authorization': 'Bearer 102-token',
+              'Access-Control-Allow-Origin': '*',
+              'Content-type': 'application/x-www-form-urlencoded',
+              'jSessionID': window.sessionStorage.jsessionid,
+              'EMail' : window.sessionStorage.userEmail,
+              'LinkUrlDocumento_SP': linkUrlDocumento_SP,
+              'KeyDoc_RF': keyDoc_RF,
+              'Subject': title
+          },
+          async: false, //needed if you want to populate variable directly without an additional callback
+          url :URL_ENDPOINT+'/AFBNetWS/resourcesDocs/manageDocs/sendDocument',
+          method: 'GET',
+          dataType: 'json', //compulsory to receive values as an object
+          processData: true, //ignore parameters if sets to false
+          //contentType: 'application/x-www-form-urlencoded',
+          crossDomain: true,
+              error: function (data, status, xhr) {
+                  myApp.hidePreloader();
+                  //alert(JSON.stringify(data));
+                  myApp.alert("Errore nell'invio della mail");
+                  err = 'err_00'
+              },
+              success: function (data, status, xhr) {
+                      myApp.hidePreloader();
+                      myApp.alert('Documento inviato con successo alla email: '+window.sessionStorage.userEmail);
+              },
 
-                      statusCode: {
-                          401: function (xhr) {
-                              myApp.hidePreloader();
-                              myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
-                          }
-                      }
-                  });
+          statusCode: {
+              401: function (xhr) {
+                  myApp.hidePreloader();
+                  myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
               }
+          }
+        });
+    }
 };
-function sendEval(valutazioneTempistica, valutazioneSoluzione, valutazioneCortesia, notaValutazione, hrefTicket){
-     if(window.sessionStorage.jsessionid === ''){
-            myApp.hidePreloader();
-            getLogout();
-        }else{
-            var obj = new Object();
-            obj.livello_tempistica = valutazioneTempistica;
-            obj.livello_soluzione  = valutazioneSoluzione;
-            obj.livello_cordialita = valutazioneCortesia;
-            obj.noteval = notaValutazione;
-            var evaluation= JSON.stringify(obj);
-            
-                $$.ajax({
-                      headers: {
-                          'Authorization': 'Bearer 102-token',
-                          'Access-Control-Allow-Origin': '*',
-                          'jSessionID': window.sessionStorage.jsessionid,
-                          'hrefTicket': hrefTicket
-                      },
-                      data: evaluation,
-                      async: false, //needed if you want to populate variable directly without an additional callback
-                      url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/valutaTicket',
-                      method: 'POST',
-                      //dataType: 'json', remove if a post request
-                      processData: true, //ignore parameters if sets to false
-                      contentType: 'application/json',
-                      crossDomain: true,
-                          error: function (data, status, xhr) {
-                              myApp.hidePreloader();
-                              //alert(JSON.stringify(data));
-                              myApp.alert("Errore nell'invio della valutazione");
-                              err = 'err_00'
-                          },
-                          success: function (data, status, xhr) {
-                                  myApp.hidePreloader();
-                                  myApp.alert('Valutazione inviata con successo ');
-                                  blockAfterEval();
-                          },
+function newTicket(){
+    if(window.sessionStorage.jsessionid === ''){
+        myApp.hidePreloader();
+        getLogout();
+   }
+   else{
+       //get ticket data
+       var dataoutput;
+       var error = false;
+       var suffix = '__' + Math.round(new Date().getTime()/1000);
+       var tkttitle = $$("#title").val() + suffix;
+       var tktnewtitle = $$("#title").val();
+       var tktdetails = $$('#dettagli').val();
+       var tktdata = {};
 
-                      statusCode: {
-                          401: function (xhr) {
-                              myApp.hidePreloader();
-                              myApp.alert('App non autorizzata ad inviare i dati');
-                          }
-                      }
-                  });
-              }
-};
+       if(!tktnewtitle){
+           myApp.alert('Il titolo è obbligatorio');
+           return false;
+       }
+       if(!tktdetails){
+           myApp.alert('La descrizione è obbligatoria');
+           return false;
+       }
+
+       tktdata.description = tkttitle;
+       tktdata.description_longdescription = tktdetails;
+       myApp.showPreloader();
+       //call for new ticket service
+       $$.ajax({
+           headers:{
+               'Authorization': 'Bearer 102-token',
+               'Access-Control-Allow-Origin': '*',
+            //    'Content-type': 'application/x-www-form-urlencoded',
+               'jSessionID': window.sessionStorage.jsessionid,
+            },
+            url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/apriTicket',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(tktdata),
+            async: false,
+            success: function(data){
+                dataoutput = data;
+            },
+            error: function(data, status, xhr){
+                error = true;
+                console.log('Request status: ' + status);
+            },
+            statusCode:{
+                415: function(xhr) {
+                    myApp.alert('Servizio non disponibile. Error status: 415');
+                    return false;
+                }
+            }
+        });
+        if(error){
+            myApp.alert('Impossibile aprire un tkt');
+            return false;
+        }
+        //get inserted ticket
+        var stringFilter = 'oslc.select=*&oslc.where=description="'+tkttitle+'"';
+        var ticketObj = getMaximoTktList(stringFilter);
+        // console.log(ticketObj.member[0]);
+        var doclink = ticketObj.member[0].doclinks.href;
+        var ticketid = ticketObj.member[0].ticketid;
+        var hrefTkt = ticketObj.member[0].href;
+        console.log('doclink: ' + doclink + ' ---- tktid: ' + ticketid);
+        // return false;
+        var fileName = '';
+        var fileType = '';
+        var docMeta = '';
+        var docDescr = '';
+        //send file to the ticket inserted
+        if($$("#file-to-upload")[0].files.length>0){
+            var formData1 = new FormData();
+            formData1.append("fileid",$$("#file-to-upload")[0].files[0]);
+            fileName = $$("#file-to-upload")[0].files[0].name;
+            fileType = $$("#file-to-upload")[0].files[0].type;
+            if(fileType=='image/png' || fileType=='image/jpeg'){
+                docMeta = 'Images';
+            }
+            else{
+                docMeta = 'Attachments';
+            }
+            docDescr = $$('#file-label').html();
+            callToMaximoFile(doclink, fileType, docMeta, docDescr, fileName, formData1)
+        }
+        if( $$('#small-image').attr('src')!='' ){
+            var img = $$('#small-image').attr('src');
+            var imgdatafile = dataURItoBlob(img);
+            var formData2 = new FormData();
+            formData2.append("fileid", imgdatafile);
+            fileName = 'myPhoto'+suffix+'.jpg';
+            fileType = 'image/jpeg';
+            docMeta = 'Images';
+            docDescr = fileName;
+            callToMaximoFile(doclink, fileType, docMeta, docDescr, fileName, formData2)
+        }
+        myApp.hidePreloader();
+        myApp.alert('Ticket creato correttamente');
+        mainView.router.reloadPage("manage_ticket.html");
+
+        //reset ticket title
+        // modifyTktTitle(tktnewtitle,hrefTkt);
+    return false;
+   }
+}
+function callToMaximoFile(doclink, fileType, docMeta, docDescr, fileName, formData){
+    $$.ajax({
+        headers: {
+           'Authorization': 'Bearer 102-token',
+           'Access-Control-Allow-Origin': '*',
+        // 'Content-type': 'multipart/form-data; boundary=----maximoCustomBoundary;',
+            'doclinks': doclink,
+            'contentType': fileType,
+            'documentMeta': docMeta,
+            'documentDescription': docDescr,
+            'fileB64': "base64",
+            'fileName': fileName,
+            'jSessionID': window.sessionStorage.jsessionid,
+        },
+        url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/allegaFile',
+        // url: 'http://192.168.3.9/v2/ttm/postfile',
+        method: 'POST',
+        data: formData,
+        async: false,
+        success: function (data) {
+            console.log('Upload file andato a buon fine');
+        },
+        error: function (data, status, xhr) {
+            console.log('Upload file fallito!' + JSON.stringify(data) + ' status: ' + status);
+            myApp.alert('Upload file fallito! STATUS: ' + status);
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+    return false;
+}
+function modifyTktTitle(tktnewtitle,hrefTkt){
+    var tktdata = {};
+    var error = false;
+    tktdata.description = tktnewtitle;
+    $$.ajax({
+        headers:{
+            'Authorization': 'Bearer 102-token',
+            'Access-Control-Allow-Origin': '*',
+         //    'Content-type': 'application/x-www-form-urlencoded',
+            'jSessionID': window.sessionStorage.jsessionid,
+            'hrefTicket': hrefTkt,
+         },
+         url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/modificaTicket',
+         method: 'PUT',
+         contentType: 'application/json',
+         data: JSON.stringify(tktdata),
+         async: false,
+         success: function(data){
+             dataoutput = data;
+         },
+         error: function(data, status, xhr){
+             error = true;
+             console.log('Request status: ' + status);
+         },
+         statusCode:{
+             415: function(xhr) {
+                 myApp.alert('Servizio non disponibile. Error status: 415');
+                 return false;
+             }
+         }
+     });
+     if(error){
+         myApp.alert('Impossibile modificare tkt');
+         return false;
+     }
+     return false;
+}
 function getLogout(){
     myApp.alert('Clicca per effettuare il login', 'Sessione Scaduta', function () {
         window.sessionStorage.clear();
