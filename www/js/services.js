@@ -69,6 +69,7 @@ function getTktDataByFilter( offset='' , limit='', filter=null, sort=null ){
 function getMaximoTktList(stringFilter){
     var err;
     var myList;
+    console.log(stringFilter);
     $$.ajax({
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -78,7 +79,6 @@ function getMaximoTktList(stringFilter){
         },
         // data: filters,
         async: false, //needed if you want to populate variable directly without an additional callback
-        // url: 'http://portal.gabriellispa.it/AFBNetWS/resourcesMaximo/manageTicket/elencoTicketsUtente/' + window.sessionStorage.username,
         url: URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/elencoTicketsUtente/',
         method: 'GET',
         dataType: 'json', //compulsory to receive values as an object
@@ -147,7 +147,6 @@ function getUserInfo(){
         if(window.sessionStorage.jsessionid === ''){
             myApp.hidePreloader();
             getLogout();
-
         }else{
              $$.ajax({
                 headers: {
@@ -164,7 +163,6 @@ function getUserInfo(){
                 //contentType: 'application/x-www-form-urlencoded',
                 crossDomain: true,
                     error: function (data, status, xhr) {
-
                         //alert(JSON.stringify(data));
                         myApp.alert('Errore reperimento Email utente');
                         err = 'err_00';
@@ -172,7 +170,6 @@ function getUserInfo(){
                     },
                     success: function (data, status, xhr) {
                         window.sessionStorage.setItem("userEmail", data.email);
-
                     },
 
                 statusCode: {
@@ -280,7 +277,6 @@ function getDocumentList(docAmountFrom,docAmountTo,dateFrom,dateTo,docContains){
                                 docTableData = data.documents;
                             }
                     },
-
                 statusCode: {
                     401: function (xhr) {
                         myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
@@ -328,7 +324,6 @@ function sendDocument(keyDoc_RF, linkUrlDocumento_SP, title){
                       myApp.hidePreloader();
                       myApp.alert('Documento inviato con successo alla email: '+window.sessionStorage.userEmail);
               },
-
           statusCode: {
               401: function (xhr) {
                   myApp.hidePreloader();
