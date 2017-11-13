@@ -229,13 +229,15 @@ function validateUser(uuid='',upwd=''){
 }
 
 function getUserProfile(){
-    
+     if(window.sessionStorage.jsessionid === ''){
+        myApp.hidePreloader();
+        getLogout();
+   }else{
     $$.ajax({
         headers: {
 //            'Authorization': 'Bearer 102-token',
             'Access-Control-Allow-Origin': '*',
-            'jSessionID': window.sessionStorage.jsessionid,
-            "cache-control": "no-cache"
+            'jSessionID': window.sessionStorage.jsessionid
         },
         url:  URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/userProfile/profilazioneUtente/'+window.sessionStorage.username,
         method: 'GET',
@@ -260,6 +262,7 @@ function getUserProfile(){
             myApp.alert('Servizio di login non disponibile.', "Login error");
         }
     });
+   }
 }
 
 // funzione reperimento documenti
@@ -400,6 +403,7 @@ function newTicket(){
                'Access-Control-Allow-Origin': '*',
             //    'Content-type': 'application/x-www-form-urlencoded',
                'jSessionID': window.sessionStorage.jsessionid,
+               'reportedby' : window.sessionStorage.username
             },
             url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/apriTicket',
             method: 'POST',
