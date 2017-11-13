@@ -1,13 +1,14 @@
 // Initialize app
 var myApp = new Framework7({
-    template7Pages: true, 
+    template7Pages: true,
     material: true,
     preroute: function (view, options) {
-        if (window.sessionStorage.jsessionid === '') {
+        if (!window.sessionStorage.jsessionid) {
             getLogout();
             return false; //required to prevent default router action
         }
-    }});
+    }
+});
 
 // If we need to use custom DOM library, let's save it to $$ variable:
 var $$ = Dom7;
@@ -30,16 +31,13 @@ var docTableData;
 
 var months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 var days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-    
+
 $$.ajaxSetup({headers: {'Access-Control-Allow-Origin': '*'}});
 var mainView = myApp.addView('.view-main', {dynamicNavbar: true, });
 
 $$(document).on('deviceready', function () {
-
     pictureSource = navigator.camera.PictureSourceType;
     destinationType = navigator.camera.DestinationType;
-
-
     //Necessarie per navigare il file system
 //    myPath = cordova.file.externalRootDirectory;
 //    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
@@ -54,7 +52,7 @@ myApp.onPageBeforeInit('*', function (page) {
 });
 //Init for every page
 //
-myApp.onPageInit("*", function (page) {
+myApp.onPageInit("*", function () {
 
 });
 
@@ -62,7 +60,7 @@ myApp.onPageInit("*", function (page) {
 /*---------------------------------------
  On EACH page
  ---------------------------------------*/
-    
+
 //INDEX
 var index = myApp.onPageInit('index', function () {
 //    //In caso di refresh  elimina fa auto-login
@@ -80,7 +78,7 @@ var index = myApp.onPageInit('index', function () {
         myApp.loginScreen(".login-screen", false);
     });
     $$("#btn-login").click(function () {
-                
+
         var formLogin = myApp.formGetData('frm-login');
         //Get Form Login
         var chkLogin;
@@ -98,7 +96,7 @@ var index = myApp.onPageInit('index', function () {
             myApp.alert("User name o password errati","Login error");
         }
     });
-    
+
 }).trigger();
 
 //MANAGE TICKET
@@ -115,7 +113,7 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
     //var myList = getTktDataByFilter('0','10',filter, sort);
     var myList; var lastIndexDoc; var limitDoc; var maxItems;
     if(!filteredList){
-        var stringFilterOnlyUsername = 'oslc.select=*&oslc.where=reportedby="'+window.sessionStorage.username+'"';
+        var stringFilterOnlyUsername = 'oslc.select=*&oslc.where=createdby="'+window.sessionStorage.username+'"';
         myList = getMaximoTktList(stringFilterOnlyUsername);
     // myList = getTktDataByFilter(lastIndex, itemsPerLoad, filter, sort);
 
@@ -125,6 +123,7 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
     if (myList && !myList.member.length > 0){
         $$('.infinite-scroll-preloader').remove();
         if(!filteredList){
+            myApp.alert("Modificare la ricerca", ["Nessun ticket trovato" ]);
             myApp.alert("Nessun ticket trovato per l'utente <b>"+window.sessionStorage.username+"</b>", ["Nessun ticket trovato" ]);
         }else{
             myApp.alert("Modificare la ricerca", ["Nessun ticket trovato" ]);
@@ -138,20 +137,14 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
         return;
     }
     maxItems = myList.member.length;
-      if (limitDoc < maxItems) {
-            $$('.infinite-scroll-preloader').removeClass('nodisplay');
-        } else {
-            $$('.infinite-scroll-preloader').addClass('nodisplay');
-            
-        }
-    var cols = ["ticketid", "externalsystem", "description", "status", "reportedby", "affectedperson", "creationdate"];
+    var cols = ["ticketid", "externalsystem", "description", "status", "createdby", "affectedperson", "creationdate"];
     var heads = ["ID Ticket", "Tipo segnalazione", "Descrizione", "Stato", "Aperto Da", "Assegnato A", "Data creazione"];
 
     buildTicketTable(myList.member, cols, heads, limitDoc, lastIndexDoc);
     lastIndexDoc = lastIndexDoc + limitDoc;
 
     // lastIndex = itemsPerLoad + 1;
- 
+
     $$('.infinite-scroll').on('infinite', function () {
         // Exit, if loading in progress
         if (loading)
@@ -174,21 +167,25 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
             lastIndexDoc = lastIndexDoc + limitDoc;
         }, 500);
     });
-    
+
 });
 
 //NEW TICKET
-var new_tkt = myApp.onPageInit("new_tkt", function () {
+var new_tkt = myApp.onPageInit("new_tkt", function (page) {
+    myApp.closeModal(".login-screen", false);
+    $$('#file-to-upload').on('change', function(){
+        // alert($$(this).val());
+        $$('#file-label').html( $$(this).val().replace(/C:\\fakepath\\/i, '') );
+        // console.log('filename: '+$$("#file-to-upload")[0].files[0].name);
+        // console.log('filetype: '+$$("#file-to-upload")[0].files[0].type);
+    });
     $$("#btn-camera-upload").click(function () {
         capturePhotoWithData();
-        //uploadFoto();
     });
-    $$("#btn-attachment-upload").click(function () {
-        //Browse device app FileSystem on iOS
-        //listPath(myPath);
 
-        //To browse only photo on iOS
-        //capturePhotoWithFile();
+    $$('#btn-new-ticket').on('click', function(e){
+        e.preventDefault();
+        newTicket();
     });
 });
 
@@ -212,30 +209,30 @@ var filterTicket = myApp.onPageInit('filterTicket', function (page) {
         var dateFrom = formatDateFromItalian($$('.datePickerFrom').val());
         var dateTo = formatDateFromItalian($$('.datePickerTo').val());
         var status= $$('.filterStatusSelect').val();
-        var desc = $$('.filterDescText').val();     
+        var desc = $$('.filterDescText').val();
         var filterTicketsString = toFilterTickets(dateFrom, dateTo, status, desc);
         filteredList = getMaximoTktList(filterTicketsString);
         mainView.router.reloadPage("manage_ticket.html");
-        
+
     });
-    
+
 });
 //DETAIL TICKET
 var ticketPage = myApp.onPageInit('ticketPage', function (page) {
     var ticketId = page.query.id;
     var stringFilter = 'oslc.select=*&oslc.where=ticketid="'+ticketId+'"';
+    myApp.alert(ticketId);
     var ticket = getMaximoTktList(stringFilter);
     if(!ticket){
         myApp.alert("Dettagli del ticket "+ticketId+" non disponibili");
         return;
     }
     populateTicketPageDetails(ticket.member[0]);
-    
+
     $$('#btn-valuta-ticket').on('click', function () {
         myApp.showPreloader();
         prepareEval();
     });
-    
 });
 
 // DOC PAGE
