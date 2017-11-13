@@ -78,7 +78,6 @@ var index = myApp.onPageInit('index', function () {
         myApp.loginScreen(".login-screen", false);
     });
     $$("#btn-login").click(function () {
-
         var formLogin = myApp.formGetData('frm-login');
         //Get Form Login
         var chkLogin;
