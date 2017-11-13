@@ -187,12 +187,7 @@ function getUserInfo(){
 }
 function validateUser(uuid='',upwd=''){
     var chkLogin = false;
-    if(uuid=='elia4ever'){
-        var d = new Date();
-        window.sessionStorage.setItem("jsessionid", uuid + d.getTime());
-        return true;
-    }
-//    return true;
+
     $$.ajax({
         headers: {
 //            'Authorization': 'Bearer 102-token',

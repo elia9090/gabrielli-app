@@ -3,8 +3,8 @@
 Initial setup
  ---------------------------------------*/
 
-//var URL_ENDPOINT = 'http://portal.gabriellispa.it';
-var URL_ENDPOINT = 'http://192.168.2.83:10039';
+var URL_ENDPOINT = 'http://portal.gabriellispa.it';
+//var URL_ENDPOINT = 'http://192.168.2.83:10039';
 
 //FILTER STRING
 var pageSizeFilterTickets=10;
@@ -185,7 +185,7 @@ function buildTicketTable(myList, columns, headers, limit, lastIndexDoc) {
         row$.append($$('<td data-collapsible-title="' + headers[1] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].externalsystem + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[2] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].description + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[3] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].status + '</a>'));
-        row$.append($$('<td data-collapsible-title="' + headers[4] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].createdby + '</a>'));
+        row$.append($$('<td data-collapsible-title="' + headers[4] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].reportedby + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[5] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + assignment + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[6] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + formatDateFromTimeStampToItalian(myList[i].creationdate) + '</a>'));
         $$(".data-table > table > tbody").append(row$);
@@ -264,11 +264,11 @@ function populateTicketPageDetails(ticket){
      * 
      * ---------IMPORTANTE--------
      */
-    if((ticket.status !== 'RESOLVED' || ticket.status !== 'CLOSED') && false){
+    if(ticket.status !== 'RESOLVED' || ticket.status !== 'CLOSED'){
         $$(".soluzioneTicket").hide();
     }
     
-    if(ticket.status !== 'RESOLVED' && false){
+    if(ticket.status !== 'RESOLVED'){
         $$(".valutazioneTkt").hide();
         $$("#btn-valuta-ticket").hide();
     }

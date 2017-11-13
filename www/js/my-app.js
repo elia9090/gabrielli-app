@@ -144,7 +144,7 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
             $$('.infinite-scroll-preloader').addClass('nodisplay');
             
         }
-    var cols = ["ticketid", "externalsystem", "description", "status", "createdby", "affectedperson", "creationdate"];
+    var cols = ["ticketid", "externalsystem", "description", "status", "reportedby", "affectedperson", "creationdate"];
     var heads = ["ID Ticket", "Tipo segnalazione", "Descrizione", "Stato", "Aperto Da", "Assegnato A", "Data creazione"];
 
     buildTicketTable(myList.member, cols, heads, limitDoc, lastIndexDoc);
