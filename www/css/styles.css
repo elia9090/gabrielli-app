@@ -154,6 +154,11 @@
 [data-page="index"] .back.link{
     display: none;
 }
+a.button.button-fill.button-raised.yellow{
+    background-color: #ffc107!important;
+    color: #fff;
+    font-size: 17px;
+}
 
 @media (max-width: 480px) and (orientation: portrait) {
     .tbodyDocumentList td{

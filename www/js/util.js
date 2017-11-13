@@ -3,8 +3,8 @@
 Initial setup
  ---------------------------------------*/
 
-var URL_ENDPOINT = 'http://portal.gabriellispa.it';
-//var URL_ENDPOINT = 'http://192.168.2.83:10039';
+//var URL_ENDPOINT = 'http://portal.gabriellispa.it';
+var URL_ENDPOINT = 'http://192.168.2.83:10039';
 
 //FILTER STRING
 var pageSizeFilterTickets=10;
@@ -176,13 +176,17 @@ function buildTicketTable(myList, columns, headers, limit, lastIndexDoc) {
     //console.log('index: '+lastIndexDoc+' limit: '+limit + ' count: ' + myList.length + ' upperLimit: ' + upperLimit);
     for (var i = lastIndexDoc; i < upperLimit && i < myList.length; i++) {
         var row$ = $$('<tr/>');
+        var assignment = myList[i].assignment2 ? myList[i].assignment2 : myList[i].assignment1;
+        if(!assignment){
+            assignment = 'Operatore non disponibile';
+        }
         url = "ticket/ticketPage.html?id=" + myList[i].ticketid;
-        row$.append($$('<td data-collapsible-title="' + headers[0] + '"/>').html('<a href="'+ url +'" class="doc-info_number">' + myList[i].ticketid + '</a>'));
+        row$.append($$('<td data-collapsible-title="' + headers[0] + '"/>').html('<a href="'+ url +'" class="button button-fill button-raised yellow">' + myList[i].ticketid + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[1] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].externalsystem + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[2] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].description + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[3] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].status + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[4] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].createdby + '</a>'));
-        row$.append($$('<td data-collapsible-title="' + headers[5] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].assignment1 + '</a>'));
+        row$.append($$('<td data-collapsible-title="' + headers[5] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + assignment + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[6] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + formatDateFromTimeStampToItalian(myList[i].creationdate) + '</a>'));
         $$(".data-table > table > tbody").append(row$);
     }
@@ -239,11 +243,17 @@ function formatDateFromTimeStampToItalian(timeStamp) {
 
 }
 function populateTicketPageDetails(ticket){
+   
+    var assignment = ticket.assignment2 ? ticket.assignment2 : ticket.assignment1;
+      if(!assignment){
+          assignment = 'Operatore non disponibile';
+      }
+      
     $$(".hrefTicketId").val(ticket.href);
     $$(".textAreaRichiestaTkt").val(ticket.description ? ticket.description.replace(/<(?:.|\n)*?>/gm, '') : "Non disponibile");
     $$(".textAreaDettagliTkt").val(ticket.description_longdescription ? ticket.description_longdescription.replace(/<(?:.|\n)*?>/gm, '') : "Dettaglio ticket non disponibile");
     $$(".statusTkt input").val(ticket.status ? ticket.status : "Status non disponibile");
-    $$(".operatoreTkt input").val(ticket.assignment1 ? ticket.assignment1 : "Operatore non disponibile");
+    $$(".operatoreTkt input").val(assignment);
     $$(".textAreaSoluzioneTkt").val(ticket.fr2code_longdescription  ? ticket.fr2code_longdescription.replace(/<(?:.|\n)*?>/gm, '')  : "Dettaglio risoluzione non disponibile");
     
 
