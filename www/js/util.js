@@ -319,3 +319,15 @@ function blockAfterEval(){
         });
         $$("#btn-valuta-ticket").hide();
 }
+
+function setUserProfile(data){
+    var stringGroup = "groupname";
+    var groupArray = [];
+    $$.each(data, function(key,value){
+        if(key.indexOf(stringGroup) !== -1){
+            groupArray.push(value.toLowerCase());
+        }
+    });
+    
+   window.sessionStorage.setItem("userProfile", groupArray);
+}

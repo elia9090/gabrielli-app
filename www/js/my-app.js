@@ -78,6 +78,7 @@ var index = myApp.onPageInit('index', function () {
         myApp.loginScreen(".login-screen", false);
     });
     $$("#btn-login").click(function () {
+
         var formLogin = myApp.formGetData('frm-login');
         //Get Form Login
         var chkLogin;
@@ -88,9 +89,21 @@ var index = myApp.onPageInit('index', function () {
             window.sessionStorage.setItem("authorized", 1);                 //Set token auth
             $$("#box-welcome").html("Benvenuto " + window.sessionStorage.username);
             myApp.closeModal(".login-screen", false);
-//            getUserProfile();
+            getUserProfile();
             getUserAnag();
             getUserInfo();
+            
+            if(!window.sessionStorage.userProfile.includes("ammin")){
+                $$(".richiestaDocumenti").hide();
+            }else{
+                $$(".richiestaDocumenti").show();
+            }
+            
+            if(!window.sessionStorage.userProfile.includes("sccdguests")){
+                $$(".gestioneTicket").hide();
+            }else{
+                $$(".gestioneTicket").show();
+            }
         }
         else{
             myApp.alert("User name o password errati","Login error");
@@ -113,7 +126,7 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
     //var myList = getTktDataByFilter('0','10',filter, sort);
     var myList; var lastIndexDoc; var limitDoc; var maxItems;
     if(!filteredList){
-        var stringFilterOnlyUsername = 'oslc.select=*&oslc.where=createdby="'+window.sessionStorage.username+'"';
+        var stringFilterOnlyUsername = 'oslc.select=*&oslc.where=reportedby="'+window.sessionStorage.username+'"';
         myList = getMaximoTktList(stringFilterOnlyUsername);
     // myList = getTktDataByFilter(lastIndex, itemsPerLoad, filter, sort);
 
@@ -123,7 +136,6 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
     if (myList && !myList.member.length > 0){
         $$('.infinite-scroll-preloader').remove();
         if(!filteredList){
-            myApp.alert("Modificare la ricerca", ["Nessun ticket trovato" ]);
             myApp.alert("Nessun ticket trovato per l'utente <b>"+window.sessionStorage.username+"</b>", ["Nessun ticket trovato" ]);
         }else{
             myApp.alert("Modificare la ricerca", ["Nessun ticket trovato" ]);
@@ -137,7 +149,7 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
         return;
     }
     maxItems = myList.member.length;
-    var cols = ["ticketid", "externalsystem", "description", "status", "createdby", "affectedperson", "creationdate"];
+    var cols = ["ticketid", "externalsystem", "description", "status", "reportedby", "affectedperson", "creationdate"];
     var heads = ["ID Ticket", "Tipo segnalazione", "Descrizione", "Stato", "Aperto Da", "Assegnato A", "Data creazione"];
 
     buildTicketTable(myList.member, cols, heads, limitDoc, lastIndexDoc);
@@ -179,7 +191,7 @@ var new_tkt = myApp.onPageInit("new_tkt", function (page) {
         // console.log('filename: '+$$("#file-to-upload")[0].files[0].name);
         // console.log('filetype: '+$$("#file-to-upload")[0].files[0].type);
     });
-    $$("#btn-camera-upload").click(function () {
+    $$(".btn-camera-upload").click(function () {
         capturePhotoWithData();
     });
 
@@ -221,7 +233,6 @@ var filterTicket = myApp.onPageInit('filterTicket', function (page) {
 var ticketPage = myApp.onPageInit('ticketPage', function (page) {
     var ticketId = page.query.id;
     var stringFilter = 'oslc.select=*&oslc.where=ticketid="'+ticketId+'"';
-    myApp.alert(ticketId);
     var ticket = getMaximoTktList(stringFilter);
     if(!ticket){
         myApp.alert("Dettagli del ticket "+ticketId+" non disponibili");

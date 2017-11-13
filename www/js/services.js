@@ -243,12 +243,7 @@ function getUserProfile(){
         async: false,
         success: function (data, status, xhr) {
             var data = JSON.parse(data);
-            var string = "groupname";
-            var array = $(data).filter(function (i,n){
-                return n.website==='yahoo'
-            });
-            alert();
-
+            var userProfile = setUserProfile(data);
         },
         statusCode: {
             401: function (xhr) {
