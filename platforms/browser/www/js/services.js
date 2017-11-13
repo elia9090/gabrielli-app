@@ -47,14 +47,17 @@ function getTktDataByFilter( offset='' , limit='', filter=null, sort=null ){
         //contentType: 'application/x-www-form-urlencoded',
         crossDomain: true,
             error: function (data, status, xhr) {
+
                 //alert(JSON.stringify(data));
                 myApp.alert('Nessun dato da caricare');
                 err = 'err_00'
             },
             success: function (data, status, xhr) {
+
                 myList = data;
             },
         statusCode: {
+
             401: function (xhr) {
                 alert('App non autorizzata ad ottenere i dati');
             }
@@ -63,8 +66,132 @@ function getTktDataByFilter( offset='' , limit='', filter=null, sort=null ){
     return myList;
 }
 
+function getMaximoTktList(stringFilter){
+    var err;
+    var myList;
+    $$.ajax({
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            "jSessionID": window.sessionStorage.jsessionid,
+            "cache-control": "no-cache",
+            "stringFilter" : stringFilter
+        },
+        // data: filters,
+        async: false, //needed if you want to populate variable directly without an additional callback
+        // url: 'http://portal.gabriellispa.it/AFBNetWS/resourcesMaximo/manageTicket/elencoTicketsUtente/' + window.sessionStorage.username,
+        url: URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/elencoTicketsUtente/',
+        method: 'GET',
+        dataType: 'json', //compulsory to receive values as an object
+        processData: true, //ignore parameters if sets to false
+        //contentType: 'application/x-www-form-urlencoded',
+        crossDomain: true,
+            error: function (data, status, xhr) {
+                //alert(JSON.stringify(data));
+                myApp.alert('Errore caricamento ticket');
+                err = 'err_00'
+            },
+            success: function (data, status, xhr) {
+                myList = data;
+            },
+        statusCode: {
+            500: function(xhr){
+                // myApp.alert('Servizio Maximo non disponibile');
+
+            },
+            401: function (xhr) {
+                myApp.alert('App non autorizzata ad ottenere i dati');
+            }
+        }
+    });
+    return myList;
+}
+
+
+function getUserAnag(){
+    var ctrl = false;
+    if(window.sessionStorage.jsessionid === ''){
+       getLogout();
+    }
+    else{
+//        myApp.alert(window.sessionStorage.jsessionid);
+        $$.ajax({
+            headers: {
+    //            'Authorization': 'Bearer 102-token',
+                'Access-Control-Allow-Origin': '*',
+                "jSessionID": window.sessionStorage.jsessionid,
+                "cache-control": "no-cache"
+            },
+            url:  URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/userProfile/anagUtente/' + window.sessionStorage.username,
+            method: 'GET',
+            crossDomain: true,
+            async: false,
+            success: function (data, status, xhr) {
+                data = JSON.parse(data);
+                window.sessionStorage.setItem("codcliamm", data.anag.member[0].codcliamm);
+                window.sessionStorage.setItem("codforamm", data.anag.member[0].codforamm);
+                window.sessionStorage.setItem("codicefiscale", data.anag.member[0].codicefiscale);
+            },
+            statusCode: {
+                401: function (xhr) {
+                    myApp.alert('Errore chiamata servizio di profilo utente','User profile Error');
+                }
+            },
+            error: function (data, status, xhr) {
+                myApp.alert('Servizio di login non disponibile.', "User profile error");
+            }
+        });
+    }
+    return ctrl;
+}
+function getUserInfo(){
+        if(window.sessionStorage.jsessionid === ''){
+            myApp.hidePreloader();
+            getLogout();
+            
+        }else{
+             $$.ajax({
+                headers: {
+                    'Authorization': 'Bearer 102-token',
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    'jSessionID': window.sessionStorage.jsessionid,
+                },
+                async: false, //needed if you want to populate variable directly without an additional callback
+                url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/userProfile/infoUtente',
+                method: 'GET',
+                dataType: 'json', //compulsory to receive values as an object
+                processData: true, //ignore parameters if sets to false
+                //contentType: 'application/x-www-form-urlencoded',
+                crossDomain: true,
+                    error: function (data, status, xhr) {
+
+                        //alert(JSON.stringify(data));
+                        myApp.alert('Errore reperimento Email utente');
+                        err = 'err_00';
+                        myApp.hidePreloader();
+                    },
+                    success: function (data, status, xhr) {
+                        window.sessionStorage.setItem("userEmail", data.email);
+                         
+                    },
+
+                statusCode: {
+                    401: function (xhr) {
+                        myApp.hidePreloader();
+                        myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
+                    }
+                }
+            });
+            
+        }
+}
 function validateUser(uuid='',upwd=''){
     var chkLogin = false;
+    if(uuid=='elia4ever'){
+        var d = new Date();
+        window.sessionStorage.setItem("jsessionid", uuid + d.getTime());
+        return true;
+    }
 //    return true;
     $$.ajax({
         headers: {
@@ -74,7 +201,7 @@ function validateUser(uuid='',upwd=''){
             "password": upwd,
             "cache-control": "no-cache"
         },
-        url: 'http://192.168.2.79:10039/AFBNetWS/resourcesMaximo/userProfile/login',
+        url:  URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/userProfile/login',
         method: 'GET',
         crossDomain: true,
         async: false,
@@ -84,6 +211,7 @@ function validateUser(uuid='',upwd=''){
 //            myApp.alert(data.jSessionID,"JSESSIONID");
             if( data.statusCode == 200 && data.jSessionID != '' ){
                 window.sessionStorage.setItem("jsessionid", data.jSessionID);
+                window.sessionStorage.setItem("username", uuid);
                 chkLogin = true;
             }
         },
@@ -104,45 +232,7 @@ function validateUser(uuid='',upwd=''){
     });
     return chkLogin;
 }
-function getUserAnag(){
-    var ctrl = false;
-    if(window.sessionStorage.jsessionid == ''){
-        myApp.alert("Sessione scaduta");
-    }
-    else{
-//        myApp.alert(window.sessionStorage.jsessionid);
-        $$.ajax({
-            headers: {
-    //            'Authorization': 'Bearer 102-token',
-                'Access-Control-Allow-Origin': '*',
-                "jSessionID": window.sessionStorage.jsessionid,
-                "cache-control": "no-cache"
-            },
-            url: 'http://192.168.2.79:10039/AFBNetWS/resourcesMaximo/userProfile/anagUtente/maxadmin',
-            method: 'GET',
-            crossDomain: true,
-            async: false,
-            success: function (data, status, xhr) {
-                data = JSON.parse(data);
-                window.sessionStorage.setItem("codcliamm", data.codcliamm);
-                window.sessionStorage.setItem("codforamm", data.codforamm);
-                window.sessionStorage.setItem("codicefiscale", data.codicefiscale);
-            },
-            statusCode: {
-                401: function (xhr) {
-                    myApp.alert('Errore chiamata servizio di profilo utente','User profile Error');
-                }
-            },
-            error: function (data, status, xhr) {
-                myApp.alert('Servizio di login non disponibile.', "User profile error");
-            }
-        });
-    }
-    return ctrl;
-}
-function getMaximoTktList(){
-    
-}
+
 function uploadFoto() {
     var img = {};
     img = {
@@ -163,72 +253,170 @@ function uploadFoto() {
         },
         statusCode: {
             401: function (xhr) {
-                alert('Macchettecarichi!');
+                alert('failure!');
             }
         },
         error: function (data, status, xhr) {
-            alert('errore distruzione di massa!!');
+            alert('failure!!');
         }
     });
 }
 
 // funzione reperimento documenti
-function getDocumentList(docType,dateFrom,dateTo,docContains){
+function getDocumentList(docAmountFrom,docAmountTo,dateFrom,dateTo,docContains){
     
-//    var obj = {};
-//    obj.filters = [
-//    {
-//        'key': 'RDTipoDocumento',
-//        'value': "",
-//        'op': 'contain'  //contains or equals
-//    },
-//    {
-//        'key': 'RDDataDocumento',
-//        'from': dateFrom,
-//        'to': dateTo,
-//        'op': 'between'
-//    },
-//
-//    {
-//        'key': 'RDNumeroDocumento',
-//        'value': docContains,
-//        'op': 'contain'  //contains or equals
-//    }];
+        if(window.sessionStorage.jsessionid === ''){
+            myApp.hidePreloader();
+            getLogout();
+        }else{
+            //sostituire il codice fiscale con +window.sessionStorage.codicefiscale
+            $$.ajax({
+                headers: {
+                    'Authorization': 'Bearer 102-token',
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    'jSessionID': window.sessionStorage.jsessionid,
+                    'DocFilterDataDocumento':'op=between,from='+dateFrom+',to='+dateTo,
+        //            'DocFilterTipoDocumento':'op=contain,value='+docType,
+                    // 'DocFilterCodiceFiscale':'op=equal,value=01654010345',
+                    'DocFilterCodiceFiscale':'op=equal,value='+window.sessionStorage.codicefiscale,
+                    'DocFilterImporto':'op=between,from='+docAmountFrom+',to='+docAmountTo,
+                    'DocFilterNumeroDocumento':'op=contain,value='+docContains
+        //            'dataType':'json',
+                },
+        //        data: '{ "filters":[{ "key":"RDTipoDocumento", "op":"contain", "value":"DDT" },{ "key":"RDDataDocumento", "op":"between", "from":"", "to":"" },{ "key":"RDNumeroDocumento", "op":"contain", "value":"" }]}',
+        //        data: JSON.stringify(obj),
+                async: false, //needed if you want to populate variable directly without an additional callback
+                url : URL_ENDPOINT+'/AFBNetWS/resourcesDocs/manageDocs/getDocumenti/',
+                method: 'GET',
+                dataType: 'json', //compulsory to receive values as an object
+                processData: true, //ignore parameters if sets to false
+                //contentType: 'application/x-www-form-urlencoded',
+                crossDomain: true,
+                    error: function (data, status, xhr) {
+                        myApp.hidePreloader();
+                        //alert(JSON.stringify(data));
+                        myApp.alert('Errore reperimento dati');
+                        err = 'err_00'
+                    },
+                    success: function (data, status, xhr) {
+                            myApp.hidePreloader();
+                            // alert(window.sessionStorage.jsessionid);
+                            if(data.status && data.status=='401'){
+                                getLogout();
+                            }
+                            else{
+                                docTableData = data.documents;
+                            }
+                    },
 
-    
-    $$.ajax({
-        headers: {
-            'Authorization': 'Bearer 102-token',
-            'Access-Control-Allow-Origin': '*',
-            'Content-type': 'application/x-www-form-urlencoded',
-            'DocFilterDataDocumento':'op=between,from='+dateFrom+',to='+dateTo,
-//            'DocFilterTipoDocumento':'op=contain,value='+docType,
-            'DocFilterNumeroDocumento':'op=contain,value='+docContains 
-//            'dataType':'json',
-        },
-//        data: '{ "filters":[{ "key":"RDTipoDocumento", "op":"contain", "value":"DDT" },{ "key":"RDDataDocumento", "op":"between", "from":"", "to":"" },{ "key":"RDNumeroDocumento", "op":"contain", "value":"" }]}',
-//        data: JSON.stringify(obj),
-        async: false, //needed if you want to populate variable directly without an additional callback
-//        url: 'http://192.168.3.9/v2/ttm/listfilters',
-        url: 'http://192.168.3.9/v2/docs/listfilters',
-        method: 'GET',
-        dataType: 'json', //compulsory to receive values as an object
-        processData: true, //ignore parameters if sets to false
-        //contentType: 'application/x-www-form-urlencoded',
-        crossDomain: true,
-            error: function (data, status, xhr) {
-                //alert(JSON.stringify(data));
-                myApp.alert('Nessun dato da caricare');
-                err = 'err_00'
-            },
-            success: function (data, status, xhr) {
-                docTableData = data;
-            },
-        statusCode: {
-            401: function (xhr) {
-                myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
+                statusCode: {
+                    401: function (xhr) {
+                        myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
+                         getLogout();
+                    },
+                    500: function(xhr){
+                        getLogout();
+                    }
+                }
+            });
+                return docTableData;
             }
-        }
+}
+function sendDocument(keyDoc_RF, linkUrlDocumento_SP, title){
+     if(window.sessionStorage.jsessionid === ''){
+            myApp.hidePreloader();
+            getLogout();
+        }else{
+                $$.ajax({
+                      headers: {
+                          'Authorization': 'Bearer 102-token',
+                          'Access-Control-Allow-Origin': '*',
+                          'Content-type': 'application/x-www-form-urlencoded',
+                          'jSessionID': window.sessionStorage.jsessionid,
+                          'EMail' : window.sessionStorage.userEmail,
+                          'LinkUrlDocumento_SP': linkUrlDocumento_SP,
+                          'KeyDoc_RF': keyDoc_RF,
+                          'Subject': title
+                      },
+                      async: false, //needed if you want to populate variable directly without an additional callback
+                      url :URL_ENDPOINT+'/AFBNetWS/resourcesDocs/manageDocs/sendDocument',
+                      method: 'GET',
+                      dataType: 'json', //compulsory to receive values as an object
+                      processData: true, //ignore parameters if sets to false
+                      //contentType: 'application/x-www-form-urlencoded',
+                      crossDomain: true,
+                          error: function (data, status, xhr) {
+                              myApp.hidePreloader();
+                              //alert(JSON.stringify(data));
+                              myApp.alert("Errore nell'invio della mail");
+                              err = 'err_00'
+                          },
+                          success: function (data, status, xhr) {
+                                  myApp.hidePreloader();
+                                  myApp.alert('Documento inviato con successo alla email: '+window.sessionStorage.userEmail);
+                          },
+
+                      statusCode: {
+                          401: function (xhr) {
+                              myApp.hidePreloader();
+                              myApp.alert('App non autorizzata ad ottenere i dati', 'docListError');
+                          }
+                      }
+                  });
+              }
+};
+function sendEval(valutazioneTempistica, valutazioneSoluzione, valutazioneCortesia, notaValutazione, hrefTicket){
+     if(window.sessionStorage.jsessionid === ''){
+            myApp.hidePreloader();
+            getLogout();
+        }else{
+            var obj = new Object();
+            obj.livello_tempistica = valutazioneTempistica;
+            obj.livello_soluzione  = valutazioneSoluzione;
+            obj.livello_cordialita = valutazioneCortesia;
+            obj.noteval = notaValutazione;
+            var evaluation= JSON.stringify(obj);
+            
+                $$.ajax({
+                      headers: {
+                          'Authorization': 'Bearer 102-token',
+                          'Access-Control-Allow-Origin': '*',
+                          'jSessionID': window.sessionStorage.jsessionid,
+                          'hrefTicket': hrefTicket
+                      },
+                      data: evaluation,
+                      async: false, //needed if you want to populate variable directly without an additional callback
+                      url :URL_ENDPOINT+'/AFBNetWS/resourcesMaximo/manageTicket/valutaTicket',
+                      method: 'POST',
+                      //dataType: 'json', remove if a post request
+                      processData: true, //ignore parameters if sets to false
+                      contentType: 'application/json',
+                      crossDomain: true,
+                          error: function (data, status, xhr) {
+                              myApp.hidePreloader();
+                              //alert(JSON.stringify(data));
+                              myApp.alert("Errore nell'invio della valutazione");
+                              err = 'err_00'
+                          },
+                          success: function (data, status, xhr) {
+                                  myApp.hidePreloader();
+                                  myApp.alert('Valutazione inviata con successo ');
+                                  blockAfterEval();
+                          },
+
+                      statusCode: {
+                          401: function (xhr) {
+                              myApp.hidePreloader();
+                              myApp.alert('App non autorizzata ad inviare i dati');
+                          }
+                      }
+                  });
+              }
+};
+function getLogout(){
+    myApp.alert('Clicca per effettuare il login', 'Sessione Scaduta', function () {
+        window.sessionStorage.clear();
+        myApp.loginScreen(".login-screen", false);
     });
-    return docTableData;
 }

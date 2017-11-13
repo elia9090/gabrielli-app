@@ -66,13 +66,15 @@
     font-size: 18px;
     text-align: center;
 }
-.datePickerFrom, .datePickerTo, .searchForNumberFrom, .searchForNumberTo, .docContains{
+.datePickerFrom, .datePickerTo, .searchForNumberFrom, .searchForNumberTo, .docContains, .docAmountFrom, .docAmountTo{
     height: 20px;
     margin-bottom: 20px;
     border: none;
     border-bottom: 1px solid;
     border-radius: 0px !important;
     font-size: 15px;
+    width: 100%;
+    max-width: 160px;
 }
 .iconCalendar{
     vertical-align: middle;
@@ -81,7 +83,7 @@
     display: block;
     text-align: left;
 }
-.datePickerContainer, .searchForNumberContainer{
+.datePickerContainer, .searchForNumberContainer, .filterStatus, .filterDesc{
     padding: 0px 5px;
     margin-bottom: 20px;
 }
@@ -101,7 +103,51 @@
 .nodisplay{
     visibility: hidden;
 }
- 
+.backToTop{
+       background: #ffc107!important;
+}
+.buttonsFilter{
+    margin-top: 50px;
+}
+.valutazioneTkt input[type="radio"] {
+  display: none;
+}
+
+.valutazioneTkt label {
+  font-size:45px; 
+}
+
+.valutazioneTkt label{
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+.textAreaValutazioneTkt{
+    direction: ltr;
+}
+.valutazioneTkt label:hover,
+.valutazioneTkt label:hover ~ label {
+  color: orange;
+}
+
+.valutazioneTkt input[type="radio"]:checked ~ label {
+  color: orange;
+}
+.valutazioneTkt{
+        padding-left: 16px;
+    
+}
+.btnDetailTicket{
+    margin-top: 50px;
+}
+
+.displaynone{
+    display: none;
+}
+
+.notaValutazione{
+    padding-right: 16px;    
+}
+
 @media (max-width: 480px) and (orientation: portrait) {
     .tbodyDocumentList td{
         padding-top: 5px;
