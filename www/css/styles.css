@@ -147,6 +147,13 @@
 .notaValutazione{
     padding-right: 16px;    
 }
+.colorWhite{
+    color:#fff !important;
+}
+
+[data-page="index"] .back.link{
+    display: none;
+}
 
 @media (max-width: 480px) and (orientation: portrait) {
     .tbodyDocumentList td{

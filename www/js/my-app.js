@@ -54,8 +54,8 @@ myApp.onPageBeforeInit('*', function (page) {
 });
 //Init for every page
 //
-myApp.onPageInit("*", function () {
-            
+myApp.onPageInit("*", function (page) {
+
 });
 
 
@@ -138,6 +138,12 @@ var manage_ticket = myApp.onPageInit('manage_ticket', function (page) {
         return;
     }
     maxItems = myList.member.length;
+      if (limitDoc < maxItems) {
+            $$('.infinite-scroll-preloader').removeClass('nodisplay');
+        } else {
+            $$('.infinite-scroll-preloader').addClass('nodisplay');
+            
+        }
     var cols = ["ticketid", "externalsystem", "description", "status", "createdby", "affectedperson", "creationdate"];
     var heads = ["ID Ticket", "Tipo segnalazione", "Descrizione", "Stato", "Aperto Da", "Assegnato A", "Data creazione"];
 

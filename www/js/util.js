@@ -3,8 +3,8 @@
 Initial setup
  ---------------------------------------*/
 
-//var URL_ENDPOINT = 'http://portal.gabriellispa.it';
-var URL_ENDPOINT = 'http://192.168.2.83:10039';
+var URL_ENDPOINT = 'http://portal.gabriellispa.it';
+//var URL_ENDPOINT = 'http://192.168.2.83:10039';
 
 //FILTER STRING
 var pageSizeFilterTickets=10;
@@ -173,7 +173,7 @@ function buildTicketTable(myList, columns, headers, limit, lastIndexDoc) {
         $$(".data-table > table > thead").empty();
     }
 
-    console.log('index: '+lastIndexDoc+' limit: '+limit + ' count: ' + myList.length + ' upperLimit: ' + upperLimit);
+    //console.log('index: '+lastIndexDoc+' limit: '+limit + ' count: ' + myList.length + ' upperLimit: ' + upperLimit);
     for (var i = lastIndexDoc; i < upperLimit && i < myList.length; i++) {
         var row$ = $$('<tr/>');
         url = "ticket/ticketPage.html?id=" + myList[i].ticketid;
@@ -182,7 +182,7 @@ function buildTicketTable(myList, columns, headers, limit, lastIndexDoc) {
         row$.append($$('<td data-collapsible-title="' + headers[2] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].description + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[3] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].status + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[4] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].createdby + '</a>'));
-        row$.append($$('<td data-collapsible-title="' + headers[5] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].affectedperson + '</a>'));
+        row$.append($$('<td data-collapsible-title="' + headers[5] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + myList[i].assignment1 + '</a>'));
         row$.append($$('<td data-collapsible-title="' + headers[6] + '"/>').html('<a href="'+ url +'" class="doc-info_title">' + formatDateFromTimeStampToItalian(myList[i].creationdate) + '</a>'));
         $$(".data-table > table > tbody").append(row$);
     }
