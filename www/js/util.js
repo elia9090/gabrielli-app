@@ -289,7 +289,7 @@ function prepareEval(){
         sendEval(valutazioneTempistica, valutazioneSoluzione, valutazioneCortesia, notaValutazione, hrefTicket);
     }
 }
-
+ 
 function blockAfterEval(){
         $$(".valutazioneTkt input").prop({
             disabled: true,
