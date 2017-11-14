@@ -201,6 +201,7 @@ function validateUser(uuid='',upwd=''){
         crossDomain: true,
         async: false,
         success: function (data, status, xhr) {
+            myApp.hidePreloader();
             data = JSON.parse(data);
 //            myApp.alert(data.statusCode,"Status code");
 //            myApp.alert(data.jSessionID,"JSESSIONID");
@@ -212,6 +213,7 @@ function validateUser(uuid='',upwd=''){
         },
         statusCode: {
             401: function (xhr) {
+                myApp.hidePreloader();
                 myApp.alert('Errore chiamata servizio di login','Login Error');
             }
         },
@@ -222,6 +224,7 @@ function validateUser(uuid='',upwd=''){
 //                    output += key + " -> " + data[key];
 //                }
 //            }
+            myApp.hidePreloader();
             myApp.alert('Servizio di login non disponibile.', "Login error");
         }
     });
@@ -395,7 +398,6 @@ function newTicket(){
 
        tktdata.description = tkttitle;
        tktdata.description_longdescription = tktdetails;
-       myApp.showPreloader();
        //call for new ticket service
        $$.ajax({
            headers:{
@@ -412,19 +414,23 @@ function newTicket(){
             async: false,
             success: function(data){
                 dataoutput = data;
+                myApp.hidePreloader();
             },
             error: function(data, status, xhr){
+                myApp.hidePreloader();
                 error = true;
                 console.log('Request status: ' + status);
             },
             statusCode:{
                 415: function(xhr) {
+                    myApp.hidePreloader();
                     myApp.alert('Servizio non disponibile. Error status: 415');
                     return false;
                 }
             }
         });
         if(error){
+            myApp.hidePreloader();
             myApp.alert('Impossibile aprire un tkt');
             return false;
         }

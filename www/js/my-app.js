@@ -197,7 +197,9 @@ var new_tkt = myApp.onPageInit("new_tkt", function (page) {
 
     $$('#btn-new-ticket').on('click', function(e){
         e.preventDefault();
-        newTicket();
+        myApp.showPreloader();
+        setTimeout(function () {newTicket();}, 1000);
+
     });
 });
 
@@ -242,7 +244,7 @@ var ticketPage = myApp.onPageInit('ticketPage', function (page) {
 
     $$('#btn-valuta-ticket').on('click', function () {
         myApp.showPreloader();
-        prepareEval();
+        setTimeout(function () { prepareEval();}, 1000);
     });
 });
 
@@ -329,7 +331,7 @@ var doc_page = myApp.onPageInit('doc_page', function (page) {
 
         lastIndexDoc = 0;
         limitDoc = 10;
-        searchDocWithFilters(docAmountFrom,docAmountTo, dateFrom, dateTo, docContains, limitDoc, lastIndexDoc);
+        setTimeout(function () { searchDocWithFilters(docAmountFrom,docAmountTo, dateFrom, dateTo, docContains, limitDoc, lastIndexDoc); }, 1000);
         loading = false;
         $('.page-content').animate({scrollTop: 330}, 500);
     });
