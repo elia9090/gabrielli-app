@@ -245,6 +245,7 @@ var ticketPage = myApp.onPageInit('ticketPage', function (page) {
     $$('#btn-valuta-ticket').on('click', function () {
         myApp.showPreloader();
         setTimeout(function () { prepareEval();}, 1000);
+        
     });
 });
 
